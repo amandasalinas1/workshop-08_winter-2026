@@ -384,71 +384,102 @@ Rename the `x` column and `group` column to match the original data frame (`drou
 
 Look at the object before plotting.
 
+```{r}
+preds <- ggpredict(
+  model4,
+  terms = c("water_treatment",
+            "species_name")) |> 
+    rename(water_treatment = x,
+           species_name = group) 
+  
+```
+
 
 
 # 5. Final figure
 
 Create a clean, publication ready figure depicting predictions for the best model and the underlying data.
 
+```{r}
+#| label: Final publication figure
+ggplot(data = drought_exp_clean,
+       aes(x = water_treatment,
+           y = total_g,
+           color = water_treatment)) +
+  geom_jitter(height = 0,
+              width = 0.2,
+              alpha = 0.5,
+              shape = 21) +
+  geom_pointrange(data = preds,
+                  aes(x = water_treatment,
+                      y = predicted,
+                      ymin = conf.low,
+                      ymax = conf.high)) +
+  scale_color_manual(values = c("Drought stressed" = ds_col,
+                                "Well watered" = ww_col)) +
+  scale_x_discrete(labels = label_wrap(10)) +
+  labs(x = "Treatment",
+       y= "Plant mass (g)") +
+  facet_wrap(~ species_name,
+             nrow = 1) + 
+  theme(legend.position = "none")
+```
+
 
 # 6. Writing
 
 ## Figure caption
 
-
-
-
-
-
+**Figure 4: Plant mass (g) differs across species and treatments.** Open circles represent individuals in each treatment (Red: Drought stressed, Blue: well watered treatment). Panels depict each different species. Opaque points represent model predictions for plant mass, and bars represent the 95% confidence intervals of model predictions. Data source: Valliere, Justin; Zhang, Jacqueline; Sharifi, M.; Rundel, Philip (2019). Data from: Can we condition native plants to increase drought tolerance and improve restoration success? [Dataset]. Dryad. [https://doi.org/10.5061/dryad.v0861f7](https://doi.org/10.5061/dryad.v0861f7)
 
 
 ## Basic components of test
 
 **predictors**  
-
+Treatment and species
 
 **response**  
-
+Plant mass (g)
 
 **test**  
-
+Linear model (multiple linear model)
 
 **distribution**  
-
+F
 
 **parameters (degrees of freedom)**  
-
+7, 62 
 
 **test statistic**
-
+27.08
 
 **R^2^**  
-
+0.73
 
 **p-value**   
-
+p < 0.001
 
 **significance level**  
-
+$\alpha$ = 0.05
 
 **reference level(s)**  
-
+drought stressed and well watered
 
 ## Written communication
 
 ### Methods
 
 #### Goal of analysis
-
+We used linear models to determine the predictive relationship between specific leaf area (cm^2^/g), treatment, and species on plant mass (g). 
 
 #### Model selection
-
+We chose the simplest model that explained the most variation in plant mass using Akaike's Information Criterion (AIC)
 
 #### Model diagnostics
-
+We evaluated model assumptions for the simplest model chosen using AIC for normally distributed errors (residuals) using QQ plots and homoscedastic errors (residuals) using Residuals vs Fitted and Scale-Location plots.
 
 ### Results
-
+We found that the simplest model describing variation in plant mass included species and treatment (linear model: F(7, 62) = 27.08, p < 0.001, $\alpha$ = 0.05, adjusted R^2^ = 0.73)
 
 
 
